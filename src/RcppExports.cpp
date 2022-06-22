@@ -11,6 +11,17 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// autoDiffExample
+int autoDiffExample(double x_input);
+RcppExport SEXP _autodiff2r_autoDiffExample(SEXP x_inputSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type x_input(x_inputSEXP);
+    rcpp_result_gen = Rcpp::wrap(autoDiffExample(x_input));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rcppeigen_hello_world
 Eigen::MatrixXd rcppeigen_hello_world();
 RcppExport SEXP _autodiff2r_rcppeigen_hello_world() {
@@ -56,6 +67,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_autodiff2r_autoDiffExample", (DL_FUNC) &_autodiff2r_autoDiffExample, 1},
     {"_autodiff2r_rcppeigen_hello_world", (DL_FUNC) &_autodiff2r_rcppeigen_hello_world, 0},
     {"_autodiff2r_rcppeigen_outerproduct", (DL_FUNC) &_autodiff2r_rcppeigen_outerproduct, 1},
     {"_autodiff2r_rcppeigen_innerproduct", (DL_FUNC) &_autodiff2r_rcppeigen_innerproduct, 1},
