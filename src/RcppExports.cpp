@@ -11,6 +11,32 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// autodiff_multivar
+int autodiff_multivar(double x_, double y_, double z_);
+RcppExport SEXP _Rcppautodiff_autodiff_multivar(SEXP x_SEXP, SEXP y_SEXP, SEXP z_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type x_(x_SEXP);
+    Rcpp::traits::input_parameter< double >::type y_(y_SEXP);
+    Rcpp::traits::input_parameter< double >::type z_(z_SEXP);
+    rcpp_result_gen = Rcpp::wrap(autodiff_multivar(x_, y_, z_));
+    return rcpp_result_gen;
+END_RCPP
+}
+// autodiff_params
+int autodiff_params(double x_, double y_, double z_);
+RcppExport SEXP _Rcppautodiff_autodiff_params(SEXP x_SEXP, SEXP y_SEXP, SEXP z_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type x_(x_SEXP);
+    Rcpp::traits::input_parameter< double >::type y_(y_SEXP);
+    Rcpp::traits::input_parameter< double >::type z_(z_SEXP);
+    rcpp_result_gen = Rcpp::wrap(autodiff_params(x_, y_, z_));
+    return rcpp_result_gen;
+END_RCPP
+}
 // autodiff_single_var
 int autodiff_single_var(double input);
 RcppExport SEXP _Rcppautodiff_autodiff_single_var(SEXP inputSEXP) {
@@ -19,6 +45,16 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type input(inputSEXP);
     rcpp_result_gen = Rcpp::wrap(autodiff_single_var(input));
+    return rcpp_result_gen;
+END_RCPP
+}
+// autodiff_jacobian
+int autodiff_jacobian();
+RcppExport SEXP _Rcppautodiff_autodiff_jacobian() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(autodiff_jacobian());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -67,7 +103,10 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_Rcppautodiff_autodiff_multivar", (DL_FUNC) &_Rcppautodiff_autodiff_multivar, 3},
+    {"_Rcppautodiff_autodiff_params", (DL_FUNC) &_Rcppautodiff_autodiff_params, 3},
     {"_Rcppautodiff_autodiff_single_var", (DL_FUNC) &_Rcppautodiff_autodiff_single_var, 1},
+    {"_Rcppautodiff_autodiff_jacobian", (DL_FUNC) &_Rcppautodiff_autodiff_jacobian, 0},
     {"_Rcppautodiff_rcppeigen_hello_world", (DL_FUNC) &_Rcppautodiff_rcppeigen_hello_world, 0},
     {"_Rcppautodiff_rcppeigen_outerproduct", (DL_FUNC) &_Rcppautodiff_rcppeigen_outerproduct, 1},
     {"_Rcppautodiff_rcppeigen_innerproduct", (DL_FUNC) &_Rcppautodiff_rcppeigen_innerproduct, 1},

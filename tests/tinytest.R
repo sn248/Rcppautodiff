@@ -1,5 +1,5 @@
 
 if ( requireNamespace("tinytest", quietly=TRUE) ){
-  tinytest::test_package("autodiff2r")
+  tinytest::test_package("Rcppautodiff")
 }
 
