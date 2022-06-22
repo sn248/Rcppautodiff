@@ -11,20 +11,20 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// autodiff_hello
-int autodiff_hello(double input);
-RcppExport SEXP _autodiff2r_autodiff_hello(SEXP inputSEXP) {
+// autodiff_single_var
+int autodiff_single_var(double input);
+RcppExport SEXP _Rcppautodiff_autodiff_single_var(SEXP inputSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type input(inputSEXP);
-    rcpp_result_gen = Rcpp::wrap(autodiff_hello(input));
+    rcpp_result_gen = Rcpp::wrap(autodiff_single_var(input));
     return rcpp_result_gen;
 END_RCPP
 }
 // rcppeigen_hello_world
 Eigen::MatrixXd rcppeigen_hello_world();
-RcppExport SEXP _autodiff2r_rcppeigen_hello_world() {
+RcppExport SEXP _Rcppautodiff_rcppeigen_hello_world() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -34,7 +34,7 @@ END_RCPP
 }
 // rcppeigen_outerproduct
 Eigen::MatrixXd rcppeigen_outerproduct(const Eigen::VectorXd& x);
-RcppExport SEXP _autodiff2r_rcppeigen_outerproduct(SEXP xSEXP) {
+RcppExport SEXP _Rcppautodiff_rcppeigen_outerproduct(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -45,7 +45,7 @@ END_RCPP
 }
 // rcppeigen_innerproduct
 double rcppeigen_innerproduct(const Eigen::VectorXd& x);
-RcppExport SEXP _autodiff2r_rcppeigen_innerproduct(SEXP xSEXP) {
+RcppExport SEXP _Rcppautodiff_rcppeigen_innerproduct(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -56,7 +56,7 @@ END_RCPP
 }
 // rcppeigen_bothproducts
 Rcpp::List rcppeigen_bothproducts(const Eigen::VectorXd& x);
-RcppExport SEXP _autodiff2r_rcppeigen_bothproducts(SEXP xSEXP) {
+RcppExport SEXP _Rcppautodiff_rcppeigen_bothproducts(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -67,15 +67,15 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_autodiff2r_autodiff_hello", (DL_FUNC) &_autodiff2r_autodiff_hello, 1},
-    {"_autodiff2r_rcppeigen_hello_world", (DL_FUNC) &_autodiff2r_rcppeigen_hello_world, 0},
-    {"_autodiff2r_rcppeigen_outerproduct", (DL_FUNC) &_autodiff2r_rcppeigen_outerproduct, 1},
-    {"_autodiff2r_rcppeigen_innerproduct", (DL_FUNC) &_autodiff2r_rcppeigen_innerproduct, 1},
-    {"_autodiff2r_rcppeigen_bothproducts", (DL_FUNC) &_autodiff2r_rcppeigen_bothproducts, 1},
+    {"_Rcppautodiff_autodiff_single_var", (DL_FUNC) &_Rcppautodiff_autodiff_single_var, 1},
+    {"_Rcppautodiff_rcppeigen_hello_world", (DL_FUNC) &_Rcppautodiff_rcppeigen_hello_world, 0},
+    {"_Rcppautodiff_rcppeigen_outerproduct", (DL_FUNC) &_Rcppautodiff_rcppeigen_outerproduct, 1},
+    {"_Rcppautodiff_rcppeigen_innerproduct", (DL_FUNC) &_Rcppautodiff_rcppeigen_innerproduct, 1},
+    {"_Rcppautodiff_rcppeigen_bothproducts", (DL_FUNC) &_Rcppautodiff_rcppeigen_bothproducts, 1},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_autodiff2r(DllInfo *dll) {
+RcppExport void R_init_Rcppautodiff(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
