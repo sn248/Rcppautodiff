@@ -1,7 +1,7 @@
 Package: Rcppautodiff
 Type: Package
 Title: What the Package Does Using Title Case
-Version: 1.0
+Version: 0.1.0
 Date: 2022-06-22
 Author: Satyaprakash Nayak
 Maintainer: Satyaprakash Nayak <sn248@cornell.edu>
@@ -9,8 +9,12 @@ Description: More details about what the package does. See
        <http://cran.r-project.org/doc/manuals/r-release/R-exts.html#The-DESCRIPTION-file>
        for details on how to write this part.
 License: GPL (>= 2)
-Suggests: tinytest
+Suggests: 
+    knitr,
+    rmarkdown,
+    tinytest
 Encoding: UTF-8
 RoxygenNote: 7.2.0
 Imports: Rcpp (>= 1.0.8.3), RcppEigen
 LinkingTo: Rcpp, RcppEigen
+VignetteBuilder: knitr

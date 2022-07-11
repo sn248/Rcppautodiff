@@ -1,0 +1,390 @@
+---
+title: "Introduction to `Rcppautodiff`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to `Rcppautodiff`}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## Introduction
+`Rcppautodiff` is an interface to the excellent [autodiff](https://autodiff.github.io/) modern, `C++17` header-only library for automatic differentiation. It provides an easy and intuitive way to compute derivatives automatically.
+
+The library also comes with excellent documentation and examples. The original `C++` examples can be seen [here](https://autodiff.github.io/tutorials/). The examples in the tutorial page of [autodiff](https://autodiff.github.io/) are recreated here with `Rcppautodiff`, interspersed with comments on how to convert from `autodiff` data-types to `Rcpp` or `R` data types and back.
+
+## Data types in `autodiff`
+`autodiff` extensively uses the [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) library and the data types defined therein, e.g., `VectorXd` and `MatrixXd`. Additionally, is has `dual` data type (representing [dual numbers](https://en.wikipedia.org/wiki/Dual_number)) and `VectorXdual` representing a vector of dual numbers. 
+
+### `dual` to `double` conversion
+`dual` number can be converted to `double` as follows:
+```{Rcpp, eval = FALSE}
+dual x = 5;
+double y = x.val;
+```
+### `VectorXreal` (or `VectorXdual`) to `Eigen::VectorXd`
+`autodiff`'s data type `VectorXreal` can be converted to `Eigen::VectorXd` as follows:
+
+```{Rcpp, eval = FALSE}
+VectorXreal v(3);
+v << 2.1, 4.3, 6.7;
+Eigen::VectorXd y = v.cast<double>();
+
+VectorXdual v(3);
+v << 2.1, 4.3, 6.7;
+Eigen::VectorXd y = v.cast<double>();
+```
+
+### `MatrixXreal` (or `MatrixXdual`) to `Eigen::MatrixXd`
+Similar to the conversion for vectors (above), `autodiff`'s `MatrixXreal` can be converted to `Eigen::MatxixXd` as follows:
+
+```{Rcpp, eval = FALSE}
+MatrixXreal m(2, 2);
+m << 2.1, 4.3, 6.7, 8.2;
+Eigen::MatrixXd m1 = m.cast<double>();
+
+MatrixXdual m(2, 2);
+m << 2.1, 4.3, 6.7, 8.2;
+Eigen::MatrixXd m1 = m.cast<double>();
+```
+
+## Example - Derivative of single-variable function
+
+Differentiating the function
+$$
+f(x) = 1 + x + x*x + 1/x + log(x)
+$$
+w.r.t. $x$.
+
+First load the package in an `R` session
+
+```{r setup}
+library(Rcppautodiff)
+```
+
+The following can be pasted in a separate file with `.cpp` extension. Then, use the `sourceCpp` function of `Rcpp` to compile the code and show result with input value of $x = 2.0$. 
+
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/forward/dual.hpp>
+
+using namespace Rcpp;
+using namespace autodiff;
+
+// [[Rcpp::plugins(cpp17)]]
+
+//[[Rcpp::depends(Rcppautodiff)]]
+
+// The single-variable function for which derivatives are needed
+dual f(dual x)
+{
+    dual y = 1/x;     // other variables should also be dual
+	return 1 + x + x*x + y + log(x);
+}
+
+// [[Rcpp::export]]
+int myfun(double input){
+
+	dual x = input;                                 // the input variable x
+	dual u = f(x);                                  // the output variable u
+
+	double dudx = derivative(f, wrt(x), at(x));     // evaluate the derivative du/dx
+
+	Rcpp::Rcout << "u = " << u << std::endl;        // print the evaluated output u
+	Rcpp::Rcout << "du/dx = " << dudx << std::endl; // print the evaluated derivative du/dx
+	return(0);
+}
+
+/*** R
+myfun(2.0)
+*/
+
+```
+
+
+## Derivatives of a multi-variable function
+
+Differentiating the function
+$$
+f(x,y,z) = 1 + x + y + z + x\cdot y + y\cdot z + x\cdot z + x\cdot y\cdot z + exp(x/y + y/z)
+$$
+w.r.t. $x, y, z$.
+
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/forward/dual.hpp>
+
+using namespace Rcpp;
+using namespace autodiff;
+
+// [[Rcpp::plugins(cpp17)]]
+
+//[[Rcpp::depends(Rcppautodiff)]]
+
+// The multi-variable function for which derivatives are needed
+dual f1(dual x, dual y, dual z)
+{
+    return 1 + x + y + z + x*y + y*z + x*z + x*y*z + exp(x/y + y/z);
+}
+
+// [[Rcpp::export]]
+int myfun1(double xin, double yin, double zin)
+{
+    dual x = xin;
+    dual y = yin;
+    dual z = zin;
+
+    dual u = f1(x, y, z);
+
+    double dudx = derivative(f1, wrt(x), at(x, y, z));
+    double dudy = derivative(f1, wrt(y), at(x, y, z));
+    double dudz = derivative(f1, wrt(z), at(x, y, z));
+
+    std::cout << "u = " << u << std::endl;         // print the evaluated output u = f(x, y, z)
+    std::cout << "du/dx = " << dudx << std::endl;  // print the evaluated derivative du/dx
+    std::cout << "du/dy = " << dudy << std::endl;  // print the evaluated derivative du/dy
+    std::cout << "du/dz = " << dudz << std::endl;  // print the evaluated derivative du/dz
+    
+    return(0);
+}
+
+/*** R
+myfun1(1.0, 2.0, 3.0)
+*/
+```
+
+
+## Derivatives of a multi-variable function with parameters
+
+Differentiating the function
+$$
+f(x) = a \cdot sin(x) + b \cdot cos(x) + c \cdot sin(x) \cdot cos(x);
+$$
+w.r.t. $x, a, b, c$ where $a, b,$ and $c$ are constant parameters.
+
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/forward/dual.hpp>
+
+using namespace Rcpp;
+using namespace autodiff;
+
+// [[Rcpp::plugins(cpp17)]]
+
+//[[Rcpp::depends(Rcppautodiff)]]
+
+// A type defining parameters for a function of interest
+struct Params
+{
+    dual a;
+    dual b;
+    dual c;
+};
+
+// The function that depends on parameters for which derivatives are needed
+dual f2(dual x, const Params& params)
+{
+    return params.a * sin(x) + params.b * cos(x) + params.c * sin(x)*cos(x);
+}
+
+// [[Rcpp::export]]
+int myfun2(double a_input, double b_input, double c_input, double x_input)
+{
+    Params params;   // initialize the parameter variables
+    
+    dual a = a_input;
+    params.a = a;    // the parameter a of type dual, not double!
+    
+    dual b = b_input;
+    params.b = b;  // the parameter b of type dual, not double!
+    
+    dual c = c_input;
+    params.c = c;  // the parameter c of type dual, not double!
+
+    dual x = x_input;  // the input variable x
+
+    dual u = f2(x, params);  // the output variable u
+
+    double dudx = derivative(f2, wrt(x), at(x, params));        // evaluate the derivative du/dx
+    double duda = derivative(f2, wrt(params.a), at(x, params)); // evaluate the derivative du/da
+    double dudb = derivative(f2, wrt(params.b), at(x, params)); // evaluate the derivative du/db
+    double dudc = derivative(f2, wrt(params.c), at(x, params)); // evaluate the derivative du/dc
+
+    std::cout << "u = " << u << std::endl;         // print the evaluated output u
+    std::cout << "du/dx = " << dudx << std::endl;  // print the evaluated derivative du/dx
+    std::cout << "du/da = " << duda << std::endl;  // print the evaluated derivative du/da
+    std::cout << "du/db = " << dudb << std::endl;  // print the evaluated derivative du/db
+    std::cout << "du/dc = " << dudc << std::endl;  // print the evaluated derivative du/dc
+    
+    return(0);
+}
+
+/*** R
+myfun2(1.0, 2.0, 3.0, 0.5)
+*/
+/*-------------------------------------------------------------------------------------------------
+=== Note ===
+---------------------------------------------------------------------------------------------------
+This example would also work if real was used instead of dual. Should you
+need higher-order cross derivatives, however, e.g.,:
+
+    double d2udxda = derivative(f, wrt(x, params.a), at(x, params));
+
+then higher-order dual types are the right choice since real types are
+optimally designed for higher-order directional derivatives.
+-------------------------------------------------------------------------------------------------*/
+
+```
+
+## Calculating Gradient vector of a scalar function
+
+Differentiation a scalar output from a vector input
+$$
+f(x) = \sum_{i = 1}^{5} (x_i \cdot e^{x_i})
+$$
+We also see use of `Eigen` vectors in the example below, so instead of 
+
+```{Rcpp, eval = FALSE}
+//[[Rcpp::depends(Rcppautodiff)]]
+```
+we write, 
+```{Rcpp, eval = FALSE}
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+```
+
+We also need to manually convert `Rcpp`'s `NumericVector` to `ArrayXreal`
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/forward/real.hpp>
+#include <autodiff/forward/real/eigen.hpp>
+
+using namespace Rcpp;
+using namespace autodiff;
+
+// [[Rcpp::plugins(cpp17)]]
+
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// The scalar function for which the gradient is needed
+real f3(const ArrayXreal& x)
+{
+    return (x * x.exp()).sum(); // sum([xi * exp(xi) for i = 1:5])
+}
+
+// [[Rcpp::export]]
+int myfun3(NumericVector x_input)
+{
+    using Eigen::VectorXd;
+
+	// Convert input vector to ArrayXreal manually
+    ArrayXreal x(x_input.length());             // declare the input array x
+    for (int i = 0; i < x_input.length(); i++){
+        x(i) = x_input[i];
+    }
+
+    real u;                                     // the output scalar u = f(x) evaluated 
+                                                // together with gradient below
+
+    VectorXd g = gradient(f3, wrt(x), at(x), u); // evaluate the function value u and its
+                                                // gradient vector g = du/dx
+
+    Rcpp::Rcout << "u = " << u << std::endl;    // print the evaluated output u
+    Rcpp::Rcout << "g = \n" << g << std::endl;  // print the evaluated gradient vector g = du/dx
+}
+
+/*** R
+myfun3(c(1,2,3,4,5))
+*/
+```
+
+## Gradient vector of a scalar function with parameters
+
+Differentiating the function
+$$
+f(x) = \sum_{i}^{N_1} x_i^2 + \sum_i^{N_2} p_{i} + q
+$$
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/forward/real.hpp>
+#include <autodiff/forward/real/eigen.hpp>
+
+using namespace Rcpp;
+using namespace autodiff;
+
+// [[Rcpp::plugins(cpp17)]]
+
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// The scalar function for which the gradient is needed
+real f4(const ArrayXreal& x, const ArrayXreal& p, const real& q)
+{
+    return (x * x).sum() * p.sum() * exp(q); // sum([xi * xi for i = 1:5]) * sum(p) * exp(q)
+}
+
+// [[Rcpp::export]]
+int myfun4(NumericVector x_input, NumericVector p_input, double q_input)
+{
+    using Eigen::VectorXd;
+
+    ArrayXreal x(x_input.length());             // declare the input array x
+    for (int i = 0; i < x_input.length(); i++){
+        x(i) = x_input[i];
+    }
+
+    ArrayXreal p(p_input.length());             // declare the input array p
+    for (int i = 0; i < p_input.length(); i++){
+        p(i) = p_input[i];
+    }
+
+    real q = q_input;        // the input parameter q as a single variable
+
+    real u;             // the output scalar u = f(x, p, q) evaluated together with gradient below
+
+    VectorXd gx   = gradient(f4, wrt(x), at(x, p, q), u);       // evaluate the function value
+                                                                // u and its gradient vector gx = du/dx
+    VectorXd gp   = gradient(f4, wrt(p), at(x, p, q), u);       // evaluate the function value
+                                                                // u and its gradient vector gp = du/dp
+    VectorXd gq   = gradient(f4, wrt(q), at(x, p, q), u);       // evaluate the function value
+                                                                // u and its gradient vector gq = du/dq
+    VectorXd gqpx = gradient(f4, wrt(q, p, x), at(x, p, q), u); // evaluate the function value
+                                                                // u and its gradient vector 
+                                                                // gqpx = [du/dq, du/dp, du/dx]
+
+    std::cout << "u = " << u << std::endl;          // print the evaluated output u
+    std::cout << "gx = \n" << gx << std::endl;      // print the evaluated gradient vector gx = du/dx
+    std::cout << "gp = \n" << gp << std::endl;      // print the evaluated gradient vector gp = du/dp
+    std::cout << "gq = \n" << gq << std::endl;      // print the evaluated gradient vector gq = du/dq
+    std::cout << "gqpx = \n" << gqpx << std::endl;  // print the evaluated gradient vector 
+                                                    // gqpx = [du/dq, du/dp, du/dx]
+}
+
+/*-------------------------------------------------------------------------------------------------
+=== Note ===
+---------------------------------------------------------------------------------------------------
+This example would also work if dual was used instead. However, if gradient,
+Jacobian, and directional derivatives are all you need, then real types are your
+best option. You want to use dual types when evaluating higher-order cross
+derivatives, which is not supported for real types.
+-------------------------------------------------------------------------------------------------*/
+/*** R
+myfun4(c(1,2,3,4,5), c(1,2,3), -2)
+*/
+```
+

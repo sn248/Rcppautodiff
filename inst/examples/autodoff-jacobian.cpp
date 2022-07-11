@@ -1,6 +1,5 @@
 #include <RcppEigen.h>
 
-#include <iostream>
 // autodiff include
 #include <autodiff/forward/dual.hpp>
 
