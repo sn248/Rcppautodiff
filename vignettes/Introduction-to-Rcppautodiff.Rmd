@@ -388,3 +388,544 @@ myfun4(c(1,2,3,4,5), c(1,2,3), -2)
 */
 ```
 
+## Jacobian of a vector function
+
+Calculating the Jacobian of the following vector function
+$$
+F(x) = x_i \cdot \sum_{i=1}^{N} x_{i}
+$$
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/forward/real.hpp>
+#include <autodiff/forward/real/eigen.hpp>
+
+using namespace Rcpp;
+using namespace autodiff;
+
+// [[Rcpp::plugins(cpp17)]]
+
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// The vector function for which the Jacobian is needed
+VectorXreal f4(const VectorXreal& x)
+{
+    return x * x.sum();
+}
+
+// [[Rcpp::export]]
+int myfun4(NumericVector x_input)
+{
+    using Eigen::MatrixXd;
+
+    // VectorXreal x(5);                         // the input vector x with 5 variables
+    // x << 1, 2, 3, 4, 5;                       // x = [1, 2, 3, 4, 5]
+    VectorXreal x(x_input.length());             // declare the input array x
+    for (int i = 0; i < x_input.length(); i++){
+        x(i) = x_input[i];
+    }
+
+    VectorXreal F;                               // the output vector F = f(x) evaluated
+                                                 // together with Jacobian matrix below
+
+    MatrixXd J = jacobian(f4, wrt(x), at(x), F); // evaluate the output vector F and 
+                                                 // the Jacobian matrix dF/dx
+
+    std::cout << "F = \n" << F << std::endl;     // print the evaluated output vector F
+    std::cout << "J = \n" << J << std::endl;     // print the evaluated Jacobian matrix dF/dx
+    
+    return(0);
+}
+
+/*** R
+myfun4(c(1,2,3,4,5))
+*/
+```
+
+## Jacobian matrix of a vector function with parameters
+
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/forward/real.hpp>
+#include <autodiff/forward/real/eigen.hpp>
+
+using namespace Rcpp;
+using namespace autodiff;
+
+// [[Rcpp::plugins(cpp17)]]
+
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// The vector function with parameters for which the Jacobian is needed
+VectorXreal f5(const VectorXreal& x, const VectorXreal& p, const real& q)
+{
+    return x * p.sum() * exp(q);
+}
+
+// [[Rcpp::export]]
+int myfun5(NumericVector x_input, NumericVector p_input, double q_input)
+{
+    using Eigen::MatrixXd;
+
+    VectorXreal x(x_input.length());             // declare the input array x
+    for (int i = 0; i < x_input.length(); i++){
+        x(i) = x_input[i];
+    }
+
+    ArrayXreal p(p_input.length());             // declare the input array p
+    for (int i = 0; i < p_input.length(); i++){
+        p(i) = p_input[i];
+    }
+
+    real q = q_input;         // the input parameter q as a single variable
+
+    VectorXreal F;       // the output vector F = f(x, p, q) evaluated together with Jacobian below
+
+    MatrixXd Jx   = jacobian(f5, wrt(x), at(x, p, q), F);       // evaluate the function and
+                                                                // the Jacobian matrix Jx = dF/dx
+    MatrixXd Jp   = jacobian(f5, wrt(p), at(x, p, q), F);       // evaluate the function and
+                                                                // the Jacobian matrix Jp = dF/dp
+    MatrixXd Jq   = jacobian(f5, wrt(q), at(x, p, q), F);       // evaluate the function and
+                                                                // the Jacobian matrix Jq = dF/dq
+    MatrixXd Jqpx = jacobian(f5, wrt(q, p, x), at(x, p, q), F); // evaluate the function and 
+                                                                // the Jacobian matrix 
+                                                                // Jqpx = [dF/dq, dF/dp, dF/dx]
+
+    Rcpp::Rcout << "F = \n" << F << std::endl;     // print the evaluated output vector F
+    Rcpp::Rcout << "Jx = \n" << Jx << std::endl;   // print the evaluated Jacobian matrix dF/dx
+    Rcpp::Rcout << "Jp = \n" << Jp << std::endl;   // print the evaluated Jacobian matrix dF/dp
+    Rcpp::Rcout << "Jq = \n" << Jq << std::endl;   // print the evaluated Jacobian matrix dF/dq
+    Rcpp::Rcout << "Jqpx = \n" << Jqpx << std::endl; // print the evaluated Jacobian 
+                                                   // matrix [dF/dq, dF/dp, dF/dx]
+    
+    return(0);                                               
+                               
+}
+
+/*** R
+myfun5(c(1,2,3,4,5), c(1,2,3), -2)
+*/
+```
+
+## Jacobian matrix of a vector function using memory maps
+
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/forward/real.hpp>
+#include <autodiff/forward/real/eigen.hpp>
+
+using namespace Rcpp;
+using namespace autodiff;
+
+using Eigen::Map;
+using Eigen::MatrixXd;
+
+// [[Rcpp::plugins(cpp17)]]
+
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// The vector function for which the Jacobian is needed
+VectorXreal f6(const VectorXreal& x)
+{
+    return x * x.sum();
+}
+
+// [[Rcpp::export]]
+int myfun6(NumericVector x_input)
+{
+    int vecLength = x_input.length();
+    VectorXreal x(vecLength);             // declare the input array x
+    for (int i = 0; i < vecLength; i++){
+        x(i) = x_input[i];
+    }
+                          
+    double y[vecLength * vecLength];  // the output Jacobian as a flat array
+
+    VectorXreal F;                                 // the output vector F = f(x) evaluated
+                                                   // together with Jacobian matrix below
+    Map<MatrixXd> J(y, vecLength, vecLength);      // the output Jacobian dF/dx mapped onto the flat array
+
+    jacobian(f6, wrt(x), at(x), F, J);             // evaluate the output vector F and the Jacobian matrix dF/dx
+
+    Rcpp::Rcout << "F = \n" << F << std::endl;    // print the evaluated output vector F
+    Rcpp::Rcout << "J = \n" << J << std::endl;    // print the evaluated Jacobian matrix dF/dx
+    Rcpp::Rcout << "y = ";                        // print the flat array
+    for(int i = 0 ; i <  vecLength * vecLength; ++i)
+        std::cout << y[i] << " ";
+    Rcpp::Rcout << std::endl;
+    
+    return(0);
+}
+
+/*** R
+myfun6(c(1,2,3,4,5))
+*/
+```
+
+## Higher-order cross-derivatives of a scalar function
+For the function
+$$
+f(x,y,z) = 1 + x + y + z + x\cdot y + y\cdot z + x\cdot z + x\cdot y\cdot z + e^{(x/y + y/z)}
+$$
+the following derivatives are calculated
+$$
+\frac{\partial f}{\partial y}, \quad \frac{\partial^2f}{\partial x \partial y}, \quad \frac{\partial }{\partial x}\bigg(\frac{\partial^2f}{\partial x \partial y}\bigg), \quad \frac{\partial^2}{\partial^2 x} \bigg(\frac{\partial^2 f}{\partial y \partial z} \bigg)
+$$
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/forward/dual.hpp>
+
+using namespace Rcpp;
+using namespace autodiff;
+
+// [[Rcpp::plugins(cpp17)]]
+
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// The multi-variable function for which higher-order derivatives are needed (up to 4th order)
+dual4th f7(dual4th x, dual4th y, dual4th z)
+{
+    return 1 + x + y + z + x*y + y*z + x*z + x*y*z + exp(x/y + y/z);
+}
+
+// [[Rcpp::export]]
+int myfun7(double x_input, double y_input, double z_input)
+{
+    dual4th x = x_input;
+    dual4th y = y_input;
+    dual4th z = z_input;
+
+    auto [u0, ux, uxy, uxyx, uxyxz] = derivatives(f7, wrt(x, y, x, z), at(x, y, z));
+
+    Rcpp::Rcout << "u0 = " << u0 << std::endl;       // print the evaluated value of u = f(x, y, z)
+    Rcpp::Rcout << "ux = " << ux << std::endl;       // print the evaluated derivative du/dx
+    Rcpp::Rcout << "uxy = " << uxy << std::endl;     // print the evaluated derivative d²u/dxdy
+    Rcpp::Rcout << "uxyx = " << uxyx << std::endl;   // print the evaluated derivative d³u/dx²dy
+    Rcpp::Rcout << "uxyxz = " << uxyxz << std::endl; // print the evaluated derivative d⁴u/dx²dydz
+    
+    return(0);
+}
+
+/*-------------------------------------------------------------------------------------------------
+=== Note ===
+---------------------------------------------------------------------------------------------------
+In most cases, dual can be replaced by real, as commented in other examples.
+However, computing higher-order cross derivatives has definitely to be done
+using higher-order dual types (e.g., dual3rd, dual4th)! This is because real
+types (e.g., real2nd, real3rd, real4th) are optimally designed for computing
+higher-order directional derivatives.
+-------------------------------------------------------------------------------------------------*/
+/*** R
+myfun7(1.0, 2.0, 3.0)
+*/
+```
+
+
+## Higher-order directional derivatives of a scalar function
+
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/forward/real.hpp>
+using namespace autodiff;
+using namespace Rcpp;
+
+// [[Rcpp::plugins(cpp17)]]
+
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// The multi-variable function for which higher-order derivatives are needed (up to 4th order)
+real4th f8(real4th x, real4th y, real4th z)
+{
+    return sin(x) * cos(y) * exp(z);
+}
+
+// [[Rcpp::export]]
+int myfun8(double x_input, double y_input, double z_input)
+{
+    real4th x = x_input;
+    real4th y = y_input;
+    real4th z = z_input;
+    
+    // the directional derivatives of f along direction v = (1, 1, 2) at (x, y, z) = (1, 2, 3)
+    auto dfdv = derivatives(f8, along(1.0, 1.0, 2.0), at(x, y, z));
+    
+    // print the evaluated 0th order directional derivative of f along v (equivalent to f(x, y, z))
+    Rcpp::Rcout << "dfdv[0] = " << dfdv[0] << std::endl;
+    
+    // print the evaluated 1st order directional derivative of f along v
+    Rcpp::Rcout << "dfdv[1] = " << dfdv[1] << std::endl;
+    
+    // print the evaluated 2nd order directional derivative of f along v
+    Rcpp::Rcout << "dfdv[2] = " << dfdv[2] << std::endl;
+    
+    // print the evaluated 3rd order directional derivative of f along v
+    Rcpp::Rcout << "dfdv[3] = " << dfdv[3] << std::endl; 
+    
+    // print the evaluated 4th order directional derivative of f along v
+    Rcpp::Rcout << "dfdv[4] = " << dfdv[4] << std::endl; 
+    
+    return(0);
+}
+
+/*-------------------------------------------------------------------------------------------------
+=== Note ===
+---------------------------------------------------------------------------------------------------
+This example would also work if dual was used instead of real. However, real
+types are your best option for directional derivatives, as they were optimally
+designed for this kind of derivatives.
+-------------------------------------------------------------------------------------------------*/
+/*** R
+myfun8(1, 2, 3)
+*/
+```
+
+## Higher-order directional derivatives of a vector function
+
+```{Rcpp, eval=FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/forward/real.hpp>
+#include <autodiff/forward/real/eigen.hpp>
+
+using namespace autodiff;
+using namespace Rcpp;
+
+using Eigen::ArrayXd;
+
+// [[Rcpp::plugins(cpp17)]]
+
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// The vector function for which higher-order directional derivatives are needed (up to 4th order).
+ArrayXreal4th f9(const ArrayXreal4th& x, real4th p)
+{
+    return p * x.log();
+}
+
+// [[Rcpp::export]]
+int myfun9(NumericVector x_input, double p_input)
+{
+
+    // ArrayXreal4th x(5); // the input vector x
+    // sx << 1.0, 2.0, 3.0, 4.0, 5.0;
+    int vecLength = x_input.length();
+    ArrayXreal4th x(vecLength);             // declare the input array x
+    for (int i = 0; i < vecLength; i++){
+        x(i) = x_input[i];
+    }
+                          
+    real4th p = p_input; // the input parameter p = 1
+
+    ArrayXd vx(vecLength); // the direction vx in the direction vector v = (vx, vp)
+    // vx << 1.0, 1.0, 1.0, 1.0, 1.0;
+    for (int i = 0; i < vecLength; i++){
+        vx(i) = 1.0;
+    }
+
+    double vp = 1.0; // the direction vp in the direction vector v = (vx, vp)
+    
+     // the directional derivatives of f along direction v = (vx, vp) at (x, p)
+    auto dfdv = derivatives(f9, along(vx, vp), at(x, p));
+
+    Rcpp::Rcout << std::scientific << std::showpos;
+    Rcpp::Rcout << "Directional derivatives of f along v = (vx, vp) up to 4th order:" << std::endl;
+    
+    // print the evaluated 0th order directional derivative of f along 
+    // v (equivalent to f(x, p))
+    Rcpp::Rcout << "dfdv[0] = " << dfdv[0].transpose() << std::endl;
+    
+     // print the evaluated 1st order directional derivative of f along v
+    Rcpp::Rcout << "dfdv[1] = " << dfdv[1].transpose() << std::endl;
+    
+     // print the evaluated 2nd order directional derivative of f along v
+    Rcpp::Rcout << "dfdv[2] = " << dfdv[2].transpose() << std::endl;
+    
+     // print the evaluated 3rd order directional derivative of f along v
+    Rcpp::Rcout << "dfdv[3] = " << dfdv[3].transpose() << std::endl;
+    
+     // print the evaluated 4th order directional derivative of f along v
+    Rcpp::Rcout << "dfdv[4] = " << dfdv[4].transpose() << std::endl;
+    Rcpp::Rcout << std::endl;
+
+     // the step length along direction v = (vx, vp) used to compute 4th order Taylor estimate of f
+    double t = 0.1;
+    
+    // start from (x, p), walk a step length t = 0.1 along direction 
+    // v = (vx, vp) and evaluate f at this current point
+    ArrayXreal4th u = f9(x + t * vx, p + t * vp);
+
+     // evaluate the 4th order Taylor estimate of f along direction 
+     // v = (vx, vp) at a step length of t = 0.1
+    ArrayXd utaylor = dfdv[0] + t*dfdv[1] + (t*t/2.0)*dfdv[2] + (t*t*t/6.0)*dfdv[3] +
+                      (t*t*t*t/24.0)*dfdv[4];
+
+    Rcpp::Rcout << "Comparison between exact evaluation and 4th order Taylor estimate:" << std::endl;
+    Rcpp::Rcout << "u(exact)  = " << u.transpose() << std::endl;
+    Rcpp::Rcout << "u(taylor) = " << utaylor.transpose() << std::endl;
+    
+    return(0);
+}
+
+/*-------------------------------------------------------------------------------------------------
+=== Output ===
+---------------------------------------------------------------------------------------------------
+Directional derivatives of f along v = (vx, vp) up to 4th order:
+dfdv[0] = +0.000000e+00 +4.852030e+00 +7.690286e+00 +9.704061e+00 +1.126607e+01
+dfdv[1] = +7.000000e+00 +4.193147e+00 +3.431946e+00 +3.136294e+00 +3.009438e+00
+dfdv[2] = -5.000000e+00 -7.500000e-01 -1.111111e-01 +6.250000e-02 +1.200000e-01
+dfdv[3] = +1.100000e+01 +1.000000e+00 +1.851852e-01 +3.125000e-02 -8.000000e-03
+dfdv[4] = -3.400000e+01 -1.625000e+00 -2.222222e-01 -3.906250e-02 -3.200000e-03
+
+Comparison between exact evaluation and 4th order Taylor estimate:
+u(exact)  = +6.767023e-01 +5.267755e+00 +8.032955e+00 +1.001801e+01 +1.156761e+01
+u(taylor) = +6.766917e-01 +5.267755e+00 +8.032955e+00 +1.001801e+01 +1.156761e+01
+-------------------------------------------------------------------------------------------------*/
+
+/*-------------------------------------------------------------------------------------------------
+=== Note ===
+---------------------------------------------------------------------------------------------------
+This example would also work if dual was used instead of real. However, real
+types are your best option for directional derivatives, as they were optimally
+designed for this kind of derivatives.
+-------------------------------------------------------------------------------------------------*/
+/*** R
+myfun9(c(1, 2, 3, 4, 5), 7.0)
+*/
+```
+
+## Taylor series of a scalar function along a direction
+
+```{Rcpp, eval=FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/forward/real.hpp>
+#include <autodiff/forward/real/eigen.hpp>
+
+using namespace autodiff;
+using namespace Rcpp;
+
+// [[Rcpp::plugins(cpp17)]]
+
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// The scalar function for which a 4th order directional Taylor series will be computed.
+real4th f10(const real4th& x, const real4th& y, const real4th& z)
+{
+    return sin(x * y) * cos(x * z) * exp(z);
+}
+
+// [[Rcpp::export]]
+int myfun10(double x_input, double y_input, double z_input)
+{
+    real4th x = x_input;                                       // the input vector x
+    real4th y = y_input;                                       // the input vector y
+    real4th z = z_input;                                       // the input vector z
+    
+    // the function g(t) as a 4th order Taylor approximation of f(x + t, y + t, z + 2t)
+    auto g = taylorseries(f10, along(1, 1, 2), at(x, y, z));
+    
+    // the step length used to evaluate g(t), the Taylor approximation of f(x + t, y + t, z + 2t)
+    double t = 0.1;        
+
+    real4th u = f10(x + t, y + t, z + 2*t);    // the exact value of f(x + t, y + t, z + 2t)
+
+    double utaylor = g(t);                     // the 4th order Taylor estimate of f(x + t, y + t, z + 2t)
+
+    Rcpp::Rcout << std::fixed;
+    Rcpp::Rcout << "Comparison between exact evaluation and 4th order Taylor estimate of f(x + t, y + t, z + 2t):" << std::endl;
+    Rcpp::Rcout << "u(exact)  = " << u << std::endl;
+    Rcpp::Rcout << "u(taylor) = " << utaylor << std::endl;
+    
+    return(0);
+}
+
+/*-------------------------------------------------------------------------------------------------
+=== Output ===
+---------------------------------------------------------------------------------------------------
+Comparison between exact evaluation and 4th order Taylor estimate of f(x + t, y + t, z + 2t):
+u(exact)  = -16.847071
+u(taylor) = -16.793986
+-------------------------------------------------------------------------------------------------*/
+/*** R
+myfun10(1, 2, 3)
+*/
+```
+
+## Taylor series of a vector function along a direction
+
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/forward/real.hpp>
+#include <autodiff/forward/real/eigen.hpp>
+
+using namespace autodiff;
+using namespace Rcpp;
+
+// [[Rcpp::plugins(cpp17)]]
+
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// The vector function for which a 4th order directional Taylor series will be computed.
+ArrayXreal4th f11(const ArrayXreal4th& x)
+{
+    return x.sin() / x;
+}
+
+// [[Rcpp::export]]
+int myfun11()
+{
+    using Eigen::ArrayXd;
+
+    ArrayXreal4th x(5);                        // the input vector x
+    x << 1.0, 2.0, 3.0, 4.0, 5.0;
+
+    ArrayXd v(5);                              // the direction vector v
+    v << 1.0, 1.0, 1.0, 1.0, 1.0;
+    
+    // the function g(t) as a 4th order Taylor approximation of f(x + t·v)
+    auto g = taylorseries(f11, along(v), at(x));
+
+    // the step length used to evaluate g(t), the Taylor approximation of f(x + t·v)
+    double t = 0.1;                            
+
+    ArrayXreal4th u = f11(x + t * v);            // the exact value of f(x + t·v)
+
+    ArrayXd utaylor = g(t);                    // the 4th order Taylor estimate of f(x + t·v)
+
+    Rcpp::Rcout << std::fixed;
+    Rcpp::Rcout << "Comparison between exact evaluation and 4th order Taylor estimate of f(x + t·v):" << std::endl;
+    Rcpp::Rcout << "u(exact)  = " << u.transpose() << std::endl;
+    Rcpp::Rcout << "u(taylor) = " << utaylor.transpose() << std::endl;
+    
+    return(0);
+}
+
+/*-------------------------------------------------------------------------------------------------
+=== Output ===
+---------------------------------------------------------------------------------------------------
+Comparison between exact evaluation and 4th order Taylor estimate of f(x + t·v):
+u(exact)  =  0.810189  0.411052  0.013413 -0.199580 -0.181532
+u(taylor) =  0.810189  0.411052  0.013413 -0.199580 -0.181532
+-------------------------------------------------------------------------------------------------*/
+/*** R
+myfun11()
+*/
+```
+
+# Reverse mode
+
+## Single-variable function
+
