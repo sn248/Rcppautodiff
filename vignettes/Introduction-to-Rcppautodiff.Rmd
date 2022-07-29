@@ -929,3 +929,394 @@ myfun11()
 
 ## Single-variable function
 
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/reverse/var.hpp>
+
+using namespace std;
+using namespace Rcpp;
+using namespace autodiff;
+
+// [[Rcpp::plugins(cpp17)]]
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// The single-variable function for which derivatives are needed
+autodiff::var f12(autodiff::var x)
+{
+    return 1 + x + x*x + 1/x + log(x);
+}
+
+// [[Rcpp::export]]
+int myfun12()
+{
+    autodiff::var x = 2.0;   // the input variable x
+    autodiff::var u = f12(x);  // the output variable u
+
+    auto [ux] = derivatives(u, wrt(x)); // evaluate the derivative of u with respect to x
+
+    Rcpp::Rcout << "u = " << u << std::endl;  // print the evaluated output variable u
+    Rcpp::Rcout << "ux = " << ux << std::endl;  // print the evaluated derivative ux
+    
+    return(0);
+}
+
+/*** R
+myfun12()
+*/
+```
+
+## 	Multi-variable function
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/reverse/var.hpp>
+
+using namespace std;
+using namespace Rcpp;
+using namespace autodiff;
+
+// [[Rcpp::plugins(cpp17)]]
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// The multi-variable function for which derivatives are needed
+autodiff::var f13(autodiff::var x, autodiff::var y, autodiff::var z)
+{
+    return 1 + x + y + z + x*y + y*z + x*z + x*y*z + exp(x/y + y/z);
+}
+
+// [[Rcpp::export]]
+int myfun13()
+{
+    autodiff::var x = 1.0;         // the input variable x
+    autodiff::var y = 2.0;         // the input variable y
+    autodiff::var z = 3.0;         // the input variable z
+    autodiff::var u = f13(x, y, z);  // the output variable u
+   
+    // evaluate the derivatives of u with respect to x, y, z
+    auto [ux, uy, uz] = derivatives(u, wrt(x, y, z));
+
+    Rcpp::Rcout << "u = " << u <<   std::endl;    // print the evaluated output u
+    Rcpp::Rcout << "ux = " << ux << std::endl;  // print the evaluated derivative ux
+    Rcpp::Rcout << "uy = " << uy << std::endl;  // print the evaluated derivative uy
+    Rcpp::Rcout << "uz = " << uz << std::endl;  // print the evaluated derivative uz
+    
+    return(0);
+}
+
+/*** R
+myfun13()
+*/
+```
+
+## Multi-variable function with conditional
+
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/reverse/var.hpp>
+
+using namespace std;
+using namespace Rcpp;
+using namespace autodiff;
+
+// [[Rcpp::plugins(cpp17)]]
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// A two-variable piecewise function for which derivatives are needed
+autodiff::var f14(autodiff::var x, autodiff::var y) { return condition(x < y, x * y, x * x); }
+
+// [[Rcpp::export]]
+int myfun14()
+{
+    autodiff::var x = 1.0;   // the input variable x
+    autodiff::var y = 2.0;   // the input variable y
+    autodiff::var u = f14(x, y);  // the output variable u
+    auto [ux, uy] = derivatives(u, wrt(x, y)); // evaluate the derivatives of u
+
+    cout << "x = " << x << ", y = " << y << endl;
+    cout << "u = " << u << endl;  // x = 1, y = 2, so x < y, so x * y = 2
+    cout << "ux = " << ux << endl;  // d/dx x * y = y = 2
+    cout << "uy = " << uy << endl;  // d/dy x * y = x = 1
+
+    x.update(3.0); // Change the value of x in the expression tree
+    u.update(); // Update the expression tree in a sweep
+    auto [ux2, uy2] = derivatives(u, wrt(x, y)); // re-evaluate the derivatives
+
+    Rcpp::Rcout << "x = " << x << ", y = " << y << std::endl;
+    Rcpp::Rcout << "u = " << u << std::endl;  // Now x > y, so x * x = 9
+    Rcpp::Rcout << "ux = " << ux2 << std::endl;  // d/dx x * x = 2x = 6
+    Rcpp::Rcout << "uy = " << uy2 << std::endl;  // d/dy x * x = 0
+
+    // condition-associated functions
+    Rcpp::Rcout << "min(x, y) = " << min(x, y) << std::endl;
+    Rcpp::Rcout << "max(x, y) = " << max(x, y) << std::endl;
+    Rcpp::Rcout << "sgn(x) = " << sgn(x) << std::endl;
+}
+
+/*** R
+myfun14()
+*/
+```
+
+## Multi-variable function with parameters
+
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/reverse/var.hpp>
+
+using namespace std;
+using namespace Rcpp;
+using namespace autodiff;
+
+// [[Rcpp::plugins(cpp17)]]
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// A type defining parameters for a function of interest
+struct Params
+{
+    autodiff::var a;
+    autodiff::var b;
+    autodiff::var c;
+};
+
+// The function that depends on parameters for which derivatives are needed
+autodiff::var f15(autodiff::var x, const Params& params)
+{
+    return params.a * sin(x) + params.b * cos(x) + params.c * sin(x)*cos(x);
+}
+
+// [[Rcpp::export]]
+int myfun15()
+{
+    Params params;   // initialize the parameter variables
+    params.a = 1.0;  // the parameter a of type var, not double!
+    params.b = 2.0;  // the parameter b of type var, not double!
+    params.c = 3.0;  // the parameter c of type var, not double!
+
+    autodiff::var x = 0.5;  // the input variable x
+    autodiff::var u = f15(x, params);  // the output variable u
+    
+    // evaluate the derivatives of u with respect to x and parameters a, b, c
+    auto [ux, ua, ub, uc] = derivatives(u, wrt(x, params.a, params.b, params.c));
+
+    Rcpp::Rcout << "u = " << u << endl;    // print the evaluated output u
+    Rcpp::Rcout << "ux = " << ux << endl;  // print the evaluated derivative du/dx
+    Rcpp::Rcout << "ua = " << ua << endl;  // print the evaluated derivative du/da
+    Rcpp::Rcout << "ub = " << ub << endl;  // print the evaluated derivative du/db
+    Rcpp::Rcout << "uc = " << uc << endl;  // print the evaluated derivative du/dc
+    
+    return(0);
+}
+
+/*** R
+myfun15()
+*/
+
+```
+
+## Gradient of a scalar function
+
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/reverse/var.hpp>
+#include <autodiff/reverse/var/eigen.hpp>
+using namespace autodiff;
+using namespace Rcpp;
+
+// [[Rcpp::plugins(cpp17)]]
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// The scalar function for which the gradient is needed
+autodiff::var f16(const ArrayXvar& x)
+{
+    return sqrt((x * x).sum()); // sqrt(sum([xi * xi for i = 1:5]))
+}
+
+// [[Rcpp::export]]
+int myfun16()
+{
+    using Eigen::VectorXd;
+
+    VectorXvar x(5);                       // the input vector x with 5 variables
+    x << 1, 2, 3, 4, 5;                    // x = [1, 2, 3, 4, 5]
+
+    autodiff::var y = f16(x);                          // the output variable y
+
+    VectorXd dydx = gradient(y, x);        // evaluate the gradient vector dy/dx
+
+    Rcpp::Rcout << "y = " << y << std::endl;           // print the evaluated output y
+    
+    // print the evaluated gradient vector dy/dx
+    Rcpp::Rcout << "dy/dx = \n" << dydx << std::endl; 
+    
+    return(0);
+}
+
+/*** R
+myfun16()
+*/
+```
+
+## Hessian of a scalar function
+
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+
+// autodiff include
+#include <autodiff/reverse/var.hpp>
+#include <autodiff/reverse/var/eigen.hpp>
+
+using namespace autodiff;
+using namespace Rcpp;
+using namespace std;
+
+// [[Rcpp::plugins(cpp17)]]
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// The scalar function for which the gradient is needed
+autodiff::var f17(const ArrayXvar& x)
+{
+    return sqrt((x * x).sum()); // sqrt(sum([xi * xi for i = 1:5]))
+}
+
+// [[Rcpp::export]]
+int myfun17()
+{
+    VectorXvar x(5);     // the input vector x with 5 variables
+    x << 1, 2, 3, 4, 5;  // x = [1, 2, 3, 4, 5]
+
+    autodiff::var u = f17(x);  // the output variable u
+
+    Eigen::VectorXd g;  // the gradient vector to be computed in method `hessian`
+    Eigen::MatrixXd H = hessian(u, x, g);  // evaluate the Hessian matrix H and the gradient vector g of u
+
+    Rcpp::Rcout << "u = " << u << std::endl;    // print the evaluated output variable u
+    Rcpp::Rcout << "g = \n" << g << std::endl;  // print the evaluated gradient vector of u
+    Rcpp::Rcout << "H = \n" << H << std::endl;  // print the evaluated Hessian matrix of u
+}
+
+/*** R
+myfun17()
+*/
+```
+
+## Higher-order derivatives of a single-variable function
+
+```{Rcpp eval = FALSE}
+#include <Rcppautodiff.h>
+
+using namespace std;
+
+// autodiff include
+#include <autodiff/reverse/var.hpp>
+using namespace autodiff;
+using namespace Rcpp;
+using namespace std;
+
+// [[Rcpp::plugins(cpp17)]]
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// [[Rcpp::export]]
+int myfun18()
+{
+    autodiff::var x = 0.5;  // the input variable x
+    autodiff::var u = sin(x) * cos(x);  // the output variable u
+
+    auto [ux] = derivativesx(u, wrt(x));  // evaluate the first order derivatives of u
+    auto [uxx] = derivativesx(ux, wrt(x));  // evaluate the second order derivatives of ux
+
+    Rcpp::Rcout << "u = " << u << endl;  // print the evaluated output variable u
+    Rcpp::Rcout << "ux(autodiff) = " << ux << endl;  // print the evaluated first order derivative ux
+    Rcpp::Rcout << "ux(exact) = " << 1 - 2*sin(x)*sin(x) << endl;  // print the exact first order derivative ux
+    Rcpp::Rcout << "uxx(autodiff) = " << uxx << endl;  // print the evaluated second order derivative uxx
+    Rcpp::Rcout << "uxx(exact) = " << -4*cos(x)*sin(x) << endl;  // print the exact second order derivative uxx
+    
+    return(0);
+}
+
+/*===============================================================================
+Output:
+=================================================================================
+u = 0.420735
+ux(autodiff) = 0.540302
+ux(exact) = 0.540302
+uxx(autodiff) = -1.68294
+uxx(exact) = -1.68294
+===============================================================================*/
+
+/*** R
+myfun18()
+*/
+```
+
+## Higher-order derivatives of a multi-variable function
+
+```{Rcpp, eval = FALSE}
+#include <Rcppautodiff.h>
+using namespace std;
+
+// autodiff include
+#include <autodiff/reverse/var.hpp>
+using namespace autodiff;
+using namespace Rcpp;
+using namespace std;
+
+// [[Rcpp::plugins(cpp17)]]
+//[[Rcpp::depends(RcppEigen, Rcppautodiff)]]
+
+// [[Rcpp::export]]
+int myfun19()
+{
+    autodiff::var x = 1.0;  // the input variable x
+    autodiff::var y = 0.5;  // the input variable y
+    autodiff::var z = 2.0;  // the input variable z
+
+    autodiff::var u = x * log(y) * exp(z);  // the output variable u
+
+     // evaluate the derivatives of u with respect to x, y, z.
+    auto [ux, uy, uz] = derivativesx(u, wrt(x, y, z)); 
+  
+    // evaluate the derivatives of ux with respect to x, y, z.
+    auto [uxx, uxy, uxz] = derivativesx(ux, wrt(x, y, z)); 
+    
+    // evaluate the derivatives of uy with respect to x, y, z.
+    auto [uyx, uyy, uyz] = derivativesx(uy, wrt(x, y, z)); 
+    
+    // evaluate the derivatives of uz with respect to x, y, z.
+    auto [uzx, uzy, uzz] = derivativesx(uz, wrt(x, y, z)); 
+
+    cout << "u = " << u << endl;  // print the evaluated output variable u
+
+    Rcpp::Rcout << "ux = " << ux << endl;  // print the evaluated first order derivative ux
+    Rcpp::Rcout << "uy = " << uy << endl;  // print the evaluated first order derivative uy
+    Rcpp::Rcout << "uz = " << uz << endl;  // print the evaluated first order derivative uz
+
+    Rcpp::Rcout << "uxx = " << uxx << endl;  // print the evaluated second order derivative uxx
+    Rcpp::Rcout << "uxy = " << uxy << endl;  // print the evaluated second order derivative uxy
+    Rcpp::Rcout << "uxz = " << uxz << endl;  // print the evaluated second order derivative uxz
+
+    Rcpp::Rcout << "uyx = " << uyx << endl;  // print the evaluated second order derivative uyx
+    Rcpp::Rcout << "uyy = " << uyy << endl;  // print the evaluated second order derivative uyy
+    Rcpp::Rcout << "uyz = " << uyz << endl;  // print the evaluated second order derivative uyz
+
+    Rcpp::Rcout << "uzx = " << uzx << endl;  // print the evaluated second order derivative uzx
+    Rcpp::Rcout << "uzy = " << uzy << endl;  // print the evaluated second order derivative uzy
+    Rcpp::Rcout << "uzz = " << uzz << endl;  // print the evaluated second order derivative uzz
+    
+    return(0);
+}
+
+/*** R
+myfun19()
+*/
+```
+
+# Complex Numbers
