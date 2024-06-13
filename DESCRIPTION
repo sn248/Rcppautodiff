@@ -14,7 +14,7 @@ Suggests:
     rmarkdown,
     tinytest
 Encoding: UTF-8
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.1
 Imports: Rcpp (>= 1.0.8.3), RcppEigen
 LinkingTo: Rcpp, RcppEigen
 VignetteBuilder: knitr

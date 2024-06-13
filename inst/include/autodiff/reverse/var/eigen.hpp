@@ -7,7 +7,7 @@
 //
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 //
-// Copyright (c) 2018-2022 Allan Leal
+// Copyright © 2018–2024 Allan Leal
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -75,10 +75,40 @@ struct ScalarBinaryOpTraits<T, autodiff::Variable<T>, BinOp>
     typedef autodiff::Variable<T> ReturnType;
 };
 
+template<typename T>
+struct NumTraits<autodiff::reverse::detail::ExprPtr<T>> : NumTraits<T> // permits to get the epsilon, dummy_precision, lowest, highest functions
+{
+    typedef autodiff::Variable<T> Real;
+    typedef autodiff::Variable<T> NonInteger;
+    typedef autodiff::Variable<T> Nested;
+    enum
+    {
+        IsComplex = 0,
+        IsInteger = 0,
+        IsSigned = 1,
+        RequireInitialization = 1,
+        ReadCost = 1,
+        AddCost = 3,
+        MulCost = 3
+    };
+};
+
+template<typename T, typename BinOp>
+struct ScalarBinaryOpTraits<autodiff::reverse::detail::ExprPtr<T>, T, BinOp>
+{
+    typedef autodiff::Variable<T> ReturnType;
+};
+
+template<typename T, typename BinOp>
+struct ScalarBinaryOpTraits<T, autodiff::reverse::detail::ExprPtr<T>, BinOp>
+{
+    typedef autodiff::Variable<T> ReturnType;
+};
 
 } // namespace Eigen
 
 namespace autodiff {
+namespace reverse {
 namespace detail {
 
 template<typename T, int Rows, int MaxRows>
@@ -185,10 +215,12 @@ auto hessian(const Variable<T>& y, Eigen::DenseBase<X>& x)
 }
 
 } // namespace detail
+  //
+} // namespace reverse
 
 AUTODIFF_DEFINE_EIGEN_TYPEDEFS_ALL_SIZES(autodiff::var, var)
 
-using detail::gradient;
-using detail::hessian;
+using reverse::detail::gradient;
+using reverse::detail::hessian;
 
 } // namespace autodiff
