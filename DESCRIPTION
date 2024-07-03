@@ -1,13 +1,11 @@
 Package: Rcppautodiff
 Type: Package
-Title: What the Package Does Using Title Case
+Title: An interface to the C++ autodifferentiation library autodiff
 Version: 0.1.0
-Date: 2022-06-22
+Date: 2024-07-03
 Author: Satyaprakash Nayak
 Maintainer: Satyaprakash Nayak <sn248@cornell.edu>
-Description: More details about what the package does. See
-       <http://cran.r-project.org/doc/manuals/r-release/R-exts.html#The-DESCRIPTION-file>
-       for details on how to write this part.
+Description: Provides an interface to the header only C++ library autodiff
 License: GPL (>= 2)
 Suggests: 
     knitr,
