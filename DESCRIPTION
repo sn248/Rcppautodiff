@@ -7,7 +7,7 @@ Authors@R: c(person(given = "Satyaprakash", family = "Nayak",
                     role = c("aut", "cre"), email = "satyaprakash.nayak@gmail.com", 
                     comment = c(ORCID = "0000-0001-7225-1317")))
 Maintainer: Satyaprakash Nayak <satyaprakash.nayak@gmail.com>
-URL: https://github.com/sn248/Rcppautodiff
+URL: https://github.com/sn248/Rcppautodiff, https://sn248.github.io/Rcppautodiff/
 BugReports: https://github.com/sn248/Rcppautodiff/issues
 Description: Provides an interface to the header only C++ library autodiff <https://autodiff.github.io/> along with a few examples.
 License: GPL (>= 2)
