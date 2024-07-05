@@ -23,10 +23,10 @@ int autodiff_single_var(double input)
 	dual u = f(x);                                  // the output variable u
 
 	double dudx = derivative(f, wrt(x), at(x));     // evaluate the derivative du/dx
-
-	Rcpp::Rcout << "Input is " << input << std::endl;
-	Rcpp::Rcout << "Function is -> (1 + input + input^2 + 1/input + log(input)) " << std::endl;
-	Rcpp::Rcout << "Function value = " << u << std::endl;        // print the evaluated output u
-	Rcpp::Rcout << "Derivative value = " << dudx << std::endl;         // print the evaluated derivative du/dx
+    // Below is just for explanation
+	Rcpp::Rcout << "Let the input variable be x" << std::endl;
+	Rcpp::Rcout << "Function is defined asL f(x) -> (1 + x + x^2 + 1/x + log(x)) " << std::endl;
+	Rcpp::Rcout << "Function value at x = " << input << " is " << u << std::endl;        // print the evaluated output u
+	Rcpp::Rcout << "Derivative of the function at x = " << input << " is " << dudx << std::endl;         // print the evaluated derivative du/dx
 	return(0);
 }

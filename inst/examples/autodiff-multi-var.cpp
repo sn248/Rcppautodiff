@@ -1,7 +1,8 @@
 #include <Rcpp.h>
 #include <iostream>
 // autodiff include
-#include <autodiff/forward/dual.hpp>
+// #include <autodiff/forward/dual.hpp>
+#include "../include/autodiff/forward/dual/dual.hpp"
 
 using namespace Rcpp;
 using namespace autodiff;

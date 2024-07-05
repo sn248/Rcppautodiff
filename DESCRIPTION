@@ -3,9 +3,13 @@ Type: Package
 Title: An interface to the C++ autodifferentiation library autodiff
 Version: 0.1.0
 Date: 2024-07-03
-Author: Satyaprakash Nayak
-Maintainer: Satyaprakash Nayak <sn248@cornell.edu>
-Description: Provides an interface to the header only C++ library autodiff
+Authors@R: c(person(given = "Satyaprakash", family = "Nayak",
+                    role = c("aut", "cre"), email = "satyaprakash.nayak@gmail.com", 
+                    comment = c(ORCID = "0000-0001-7225-1317")))
+Maintainer: Satyaprakash Nayak <satyaprakash.nayak@gmail.com>
+URL: https://github.com/sn248/Rcppautodiff
+BugReports: https://github.com/sn248/Rcppautodiff/issues
+Description: Provides an interface to the header only C++ library autodiff <https://autodiff.github.io/> along with a few examples.
 License: GPL (>= 2)
 Suggests: 
     knitr,
