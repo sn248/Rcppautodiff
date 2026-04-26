@@ -1,3 +1,7 @@
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/sn248/Rcppautodiff/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sn248/Rcppautodiff/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 # Rcppautodiff
 An `R` interface to the [autodiff](https://autodiff.github.io/) `C++` library. [autodiff](https://autodiff.github.io/) is a header-only `C++` library which provides an efficient and simple interface to perform automatic differentiation. [autodiff](https://autodiff.github.io/) supports both forward and reverse mode of automatic differentiation. `Rcppautodiff` brings these capabilities to `R`. For more details on the [autodiff](https://autodiff.github.io/) library, please see its documentation and tutorials. A few examples usages of `Rcppautodiff` are shown below. First, installation ..
 
