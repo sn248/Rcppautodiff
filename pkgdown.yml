@@ -3,7 +3,7 @@ pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   Introduction-to-Rcppautodiff: Introduction-to-Rcppautodiff.html
-last_built: 2026-04-26T14:12Z
+last_built: 2026-04-26T14:14Z
 urls:
   reference: https://sn248.github.io/Rcppautodiff/reference
   article: https://sn248.github.io/Rcppautodiff/articles
