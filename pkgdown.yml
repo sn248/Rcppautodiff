@@ -1,10 +1,9 @@
 pandoc: 3.1.11
-pkgdown: 2.0.9
+pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   Introduction-to-Rcppautodiff: Introduction-to-Rcppautodiff.html
-last_built: 2024-07-05T19:34Z
+last_built: 2026-04-26T14:10Z
 urls:
   reference: https://sn248.github.io/Rcppautodiff/reference
   article: https://sn248.github.io/Rcppautodiff/articles
-
