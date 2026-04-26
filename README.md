@@ -4,7 +4,7 @@ An `R` interface to the [autodiff](https://autodiff.github.io/) `C++` library. [
 ## Installation
 `Rcppautodiff` is not on CRAN yet. It can be installed from github using the following command in the `R` console.
 ```R
-devtools::install_github('sn248/Rcppautodiff)
+devtools::install_github('sn248/Rcppautodiff')
 ```
 
 ## Examples

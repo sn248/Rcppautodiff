@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 ## Introduction
 `Rcppautodiff` is an interface to the excellent [autodiff](https://autodiff.github.io/) modern, `C++17` header-only library for automatic differentiation. It provides an easy and intuitive way to compute derivatives automatically.
 
-The library also comes with excellent documentation and examples. The original `C++` examples can be seen [here](https://autodiff.github.io/tutorials/). The examples in the tutorial page of [autodiff](https://autodiff.github.io/) are recreated here with `Rcppautodiff`, interspersed with comments on how to convert from `autodiff` data-types to `Rcpp` or `R` data types and back.
+The library also comes with excellent documentation and examples. The original `C++` examples can be seen [here](https://autodiff.github.io/tutorials/)(not all the examples in the original reference have been reproduced here). The examples in the tutorial page of [autodiff](https://autodiff.github.io/) are recreated here with `Rcppautodiff`, interspersed with comments on how to convert from `autodiff` data-types to `Rcpp` or `R` data types and back.
 
 ## Data types in `autodiff`
 `autodiff` extensively uses the [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) library and the data types defined therein, e.g., `VectorXd` and `MatrixXd`. Additionally, is has `dual` data type (representing [dual numbers](https://en.wikipedia.org/wiki/Dual_number)) and `VectorXdual` representing a vector of dual numbers. 
@@ -55,7 +55,9 @@ m << 2.1, 4.3, 6.7, 8.2;
 Eigen::MatrixXd m1 = m.cast<double>();
 ```
 
-## Example - Derivative of single-variable function
+Examples of derivatives of different function types are provided below. See the examples in [autodiff] (https://autodiff.github.io/tutorials/) tutorials section for a complete list of examples with the `C++` library.
+
+## Derivative of single-variable function
 
 Differentiating the function
 $$
