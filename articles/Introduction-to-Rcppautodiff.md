@@ -70,18 +70,22 @@ complete list of examples with the `C++` library.
 
 ### Derivative of single-variable function
 
-Differentiating the function $$f(x) = 1 + x + x*x + 1/x + log(x)$$
-w.r.t. $x$.
+Differentiating the function
+``` math
+f(x) = 1 + x + x*x + 1/x + log(x)
+```
+w.r.t. $`x`$.
 
 First load the package in an `R` session
 
 ``` r
+
 library(Rcppautodiff)
 ```
 
 The following can be pasted in a separate file with `.cpp` extension.
 Then, use the `sourceCpp` function of `Rcpp` to compile the code and
-show result with input value of $x = 2.0$.
+show result with input value of $`x = 2.0`$.
 
 ``` cpp
 #include <Rcppautodiff.h>
@@ -124,8 +128,10 @@ myfun(2.0)
 ### Derivatives of a multi-variable function
 
 Differentiating the function
-$$f(x,y,z) = 1 + x + y + z + x \cdot y + y \cdot z + x \cdot z + x \cdot y \cdot z + exp(x/y + y/z)$$
-w.r.t. $x,y,z$.
+``` math
+f(x,y,z) = 1 + x + y + z + x\cdot y + y\cdot z + x\cdot z + x\cdot y\cdot z + exp(x/y + y/z)
+```
+w.r.t. $`x, y, z`$.
 
 ``` cpp
 #include <Rcppautodiff.h>
@@ -175,8 +181,10 @@ myfun1(1.0, 2.0, 3.0)
 ### Derivatives of a multi-variable function with parameters
 
 Differentiating the function
-$$f(x) = a \cdot sin(x) + b \cdot cos(x) + c \cdot sin(x) \cdot cos(x);$$
-w.r.t. $x,a,b,c$ where $a,b,$ and $c$ are constant parameters.
+``` math
+f(x) = a \cdot sin(x) + b \cdot cos(x) + c \cdot sin(x) \cdot cos(x);
+```
+w.r.t. $`x, a, b, c`$ where $`a, b,`$ and $`c`$ are constant parameters.
 
 ``` cpp
 #include <Rcppautodiff.h>
@@ -256,7 +264,9 @@ optimally designed for higher-order directional derivatives.
 ### Calculating Gradient vector of a scalar function
 
 Differentiation a scalar output from a vector input
-$$f(x) = \sum\limits_{i = 1}^{5}\left( x_{i} \cdot e^{x_{i}} \right)$$
+``` math
+f(x) = \sum_{i = 1}^{5} (x_i \cdot e^{x_i})
+```
 We also see use of `Eigen` vectors in the example below, so instead of
 
 ``` cpp
@@ -321,7 +331,9 @@ myfun3(c(1,2,3,4,5))
 ### Gradient vector of a scalar function with parameters
 
 Differentiating the function
-$$f(x) = \sum\limits_{i}^{N_{1}}x_{i}^{2} + \sum\limits_{i}^{N_{2}}p_{i} + q$$
+``` math
+f(x) = \sum_{i}^{N_1} x_i^2 + \sum_i^{N_2} p_{i} + q
+```
 
 ``` cpp
 #include <Rcppautodiff.h>
@@ -396,7 +408,9 @@ myfun4(c(1,2,3,4,5), c(1,2,3), -2)
 ### Jacobian of a vector function
 
 Calculating the Jacobian of the following vector function
-$$F(x) = x_{i} \cdot \sum\limits_{i = 1}^{N}x_{i}$$
+``` math
+F(x) = x_i \cdot \sum_{i=1}^{N} x_{i}
+```
 
 ``` cpp
 #include <Rcppautodiff.h>
@@ -574,9 +588,13 @@ myfun6(c(1,2,3,4,5))
 ### Higher-order cross-derivatives of a scalar function
 
 For the function
-$$f(x,y,z) = 1 + x + y + z + x \cdot y + y \cdot z + x \cdot z + x \cdot y \cdot z + e^{(x/y + y/z)}$$
+``` math
+f(x,y,z) = 1 + x + y + z + x\cdot y + y\cdot z + x\cdot z + x\cdot y\cdot z + e^{(x/y + y/z)}
+```
 the following derivatives are calculated
-$$\frac{\partial f}{\partial y},\quad\frac{\partial^{2}f}{\partial x\partial y},\quad\frac{\partial}{\partial x}(\frac{\partial^{2}f}{\partial x\partial y}),\quad\frac{\partial^{2}}{\partial^{2}x}(\frac{\partial^{2}f}{\partial y\partial z})$$
+``` math
+\frac{\partial f}{\partial y}, \quad \frac{\partial^2f}{\partial x \partial y}, \quad \frac{\partial }{\partial x}\bigg(\frac{\partial^2f}{\partial x \partial y}\bigg), \quad \frac{\partial^2}{\partial^2 x} \bigg(\frac{\partial^2 f}{\partial y \partial z} \bigg)
+```
 
 ``` cpp
 #include <Rcppautodiff.h>
