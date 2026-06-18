@@ -12,4 +12,7 @@ devtools::install_github('sn248/Rcppautodiff')
 ```
 
 ## Examples
-### 
+See the package vignette for a variety of examples.
+
+## Acknowledgement
+This package would not be possible without the wonderful `autodiff`, a modern, fast and expressive C++ library for automatic differentiation (by Allan M. M. Beal), found at https://autodiff.github.io/
