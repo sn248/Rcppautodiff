@@ -1,8 +1,8 @@
 Package: Rcppautodiff
 Type: Package
-Title: An interface to the C++ autodifferentiation library autodiff
+Title: An Interface to the C++ Automatic Differentiation Library Autodiff
 Version: 0.1.0
-Date: 2024-07-03
+Date: 2026-06-27
 Authors@R: c(person(given = "Satyaprakash", family = "Nayak",
                     role = c("aut", "cre"), email = "satyaprakash.nayak@gmail.com", 
                     comment = c(ORCID = "0000-0001-7225-1317")))
