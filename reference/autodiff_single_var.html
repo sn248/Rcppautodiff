@@ -53,7 +53,22 @@
 <dd><p>Value of independent variable (must be greater than 0)</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A named list with two elements, <code>value</code> (the function
+  \(f(x) = 1 + x + x^2 + 1/x + \log(x)\) evaluated at <code>input</code>) and
+  <code>derivative</code> (the derivative of \(f\) evaluated at <code>input</code>).</p>
+    </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">autodiff_single_var</span><span class="op">(</span><span class="fl">2.0</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">res</span><span class="op">$</span><span class="va">value</span>        <span class="co"># f(2)  = 1 + 2 + 4 + 0.5 + log(2)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 8.193147</span>
+<span class="r-in"><span><span class="va">res</span><span class="op">$</span><span class="va">derivative</span>   <span class="co"># f'(2) = 1 + 4 - 0.25 + 0.5 = 5.25</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5.25</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
@@ -63,7 +78,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>
