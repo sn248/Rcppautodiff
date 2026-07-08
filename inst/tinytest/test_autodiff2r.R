@@ -2,6 +2,13 @@ library(tinytest)
 library(Rcpp)
 
 
+## Exported example function ---------------------------------------------------
+## f(x) = 1 + x + x^2 + 1/x + log(x), so f(2) = 7.5 + log(2)
+## f'(x) = 1 + 2x - 1/x^2 + 1/x, so f'(2) = 5.25
+res <- autodiff_single_var(2.0)
+expect_equal(res$value, 7.5 + log(2))
+expect_equal(res$derivative, 5.25)
+
 ## Derivative of a single variable function ------------------------------------
 cppFunction("#include <Rcppautodiff.h>
 

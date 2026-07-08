@@ -9,6 +9,16 @@ autodiff_single_var(input)
 \arguments{
 \item{input}{Value of independent variable (must be greater than 0)}
 }
+\value{
+A named list with two elements, \code{value} (the function
+  \eqn{f(x) = 1 + x + x^2 + 1/x + \log(x)} evaluated at \code{input}) and
+  \code{derivative} (the derivative of \eqn{f} evaluated at \code{input}).
+}
 \description{
 Example function to show differentiation w.r.t. a single variable
+}
+\examples{
+res <- autodiff_single_var(2.0)
+res$value        # f(2)  = 1 + 2 + 4 + 0.5 + log(2)
+res$derivative   # f'(2) = 1 + 4 - 0.25 + 0.5 = 5.25
 }

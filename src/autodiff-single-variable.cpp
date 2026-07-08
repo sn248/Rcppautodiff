@@ -16,19 +16,25 @@ dual f(dual t)
 //'
 //' Example function to show differentiation w.r.t. a single variable
 //' @param input Value of independent variable (must be greater than 0)
+//' @return A named list with two elements, \code{value} (the function
+//'   \eqn{f(x) = 1 + x + x^2 + 1/x + \log(x)} evaluated at \code{input}) and
+//'   \code{derivative} (the derivative of \eqn{f} evaluated at \code{input}).
+//' @examples
+//' res <- autodiff_single_var(2.0)
+//' res$value        # f(2)  = 1 + 2 + 4 + 0.5 + log(2)
+//' res$derivative   # f'(2) = 1 + 4 - 0.25 + 0.5 = 5.25
 // [[Rcpp::export]]
-int autodiff_single_var(double input)
+Rcpp::List autodiff_single_var(double input)
 {
 	dual x = input;                                 // the input variable x
 	dual u = f(x);                                  // the output variable u
 
 	double dudx = derivative(f, wrt(x), at(x));     // evaluate the derivative du/dx
-    // Below is just for explanation
-	Rcpp::Rcout << "Let the input variable be x" << std::endl;
-	Rcpp::Rcout << "Function is defined as f(x) -> (1 + x + x^2 + 1/x + log(x)) " << std::endl;
-	Rcpp::Rcout << "Function value at x = " << input << " is " << u << std::endl;                        // print the evaluated output u
-	Rcpp::Rcout << "Derivative of the function at x = " << input << " is " << dudx << std::endl;         // print the evaluated derivative du/dx
-	return(0);
+
+	return Rcpp::List::create(
+		Rcpp::Named("value") = static_cast<double>(u),
+		Rcpp::Named("derivative") = dudx
+	);
 }
 
 /*** R

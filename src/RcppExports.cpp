@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // autodiff_single_var
-int autodiff_single_var(double input);
+Rcpp::List autodiff_single_var(double input);
 RcppExport SEXP _Rcppautodiff_autodiff_single_var(SEXP inputSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

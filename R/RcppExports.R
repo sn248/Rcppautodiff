@@ -5,6 +5,13 @@
 #'
 #' Example function to show differentiation w.r.t. a single variable
 #' @param input Value of independent variable (must be greater than 0)
+#' @return A named list with two elements, \code{value} (the function
+#'   \eqn{f(x) = 1 + x + x^2 + 1/x + \log(x)} evaluated at \code{input}) and
+#'   \code{derivative} (the derivative of \eqn{f} evaluated at \code{input}).
+#' @examples
+#' res <- autodiff_single_var(2.0)
+#' res$value        # f(2)  = 1 + 2 + 4 + 0.5 + log(2)
+#' res$derivative   # f'(2) = 1 + 4 - 0.25 + 0.5 = 5.25
 autodiff_single_var <- function(input) {
     .Call('_Rcppautodiff_autodiff_single_var', PACKAGE = 'Rcppautodiff', input)
 }
