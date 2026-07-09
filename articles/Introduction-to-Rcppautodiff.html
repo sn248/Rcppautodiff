@@ -72,9 +72,9 @@
 provides an easy and intuitive way to compute derivatives
 automatically.</p>
 <p>The library also comes with excellent documentation and examples. The
-original <code>C++</code> examples can be seen <a href="https://autodiff.github.io/tutorials/" class="external-link">here</a>(not all the
-examples in the original reference have been reproduced here). The
-examples in the tutorial page of <a href="https://autodiff.github.io/" class="external-link">autodiff</a> are recreated here with
+original <code>C++</code> examples can be seen <a href="https://autodiff.github.io/tutorials/" class="external-link">here</a> (not all the
+examples in the original reference have been reproduced in this
+vignette). The examples in the tutorial page of <a href="https://autodiff.github.io/" class="external-link">autodiff</a> are recreated here with
 <code>Rcppautodiff</code>, interspersed with comments on how to convert
 from <code>autodiff</code> data-types to <code>Rcpp</code> or
 <code>R</code> data types and back.</p>
@@ -84,7 +84,7 @@ from <code>autodiff</code> data-types to <code>Rcpp</code> or
 </h3>
 <p><code>autodiff</code> extensively uses the <a href="https://eigen.tuxfamily.org/index.php?title=Main_Page" class="external-link">Eigen</a>
 library and the data types defined therein, e.g., <code>VectorXd</code>
-and <code>MatrixXd</code>. Additionally, is has <code>dual</code> data
+and <code>MatrixXd</code>. Additionally, it has <code>dual</code> data
 type (representing <a href="https://en.wikipedia.org/wiki/Dual_number" class="external-link">dual numbers</a>) and
 <code>VectorXdual</code> representing a vector of dual numbers.</p>
 <div class="section level4">
@@ -1368,10 +1368,62 @@ calculated
 <span id="cb27-56"><a href="#cb27-56" tabindex="-1"></a><span class="co">myfun19()</span></span>
 <span id="cb27-57"><a href="#cb27-57" tabindex="-1"></a><span class="co">*/</span></span></code></pre></div>
 </div>
+<div class="section level3">
+<h3 id="derivatives-of-a-single-variable-function-using-a-custom-scalar-complex">Derivatives of a single-variable function using a custom scalar
+(complex)<a class="anchor" aria-label="anchor" href="#derivatives-of-a-single-variable-function-using-a-custom-scalar-complex"></a>
+</h3>
+<div class="sourceCode" id="cb28"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="co">// autodiff include</span></span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;autodiff/forward/dual.hpp&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a><span class="kw">using</span> <span class="kw">namespace</span> Rcpp<span class="op">;</span></span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a><span class="kw">using</span> <span class="kw">namespace</span> autodiff<span class="op">;</span></span>
+<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a><span class="co">// [[Rcpp::plugins(cpp17)]]</span></span>
+<span id="cb28-8"><a href="#cb28-8" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="#cb28-9" tabindex="-1"></a><span class="co">//[[Rcpp::depends(Rcppautodiff)]]</span></span>
+<span id="cb28-10"><a href="#cb28-10" tabindex="-1"></a></span>
+<span id="cb28-11"><a href="#cb28-11" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;iostream&gt;</span></span>
+<span id="cb28-12"><a href="#cb28-12" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;complex&gt;</span></span>
+<span id="cb28-13"><a href="#cb28-13" tabindex="-1"></a><span class="kw">using</span> <span class="kw">namespace</span> std<span class="op">;</span></span>
+<span id="cb28-14"><a href="#cb28-14" tabindex="-1"></a></span>
+<span id="cb28-15"><a href="#cb28-15" tabindex="-1"></a><span class="co">// autodiff include</span></span>
+<span id="cb28-16"><a href="#cb28-16" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;autodiff/forward/dual.hpp&gt;</span></span>
+<span id="cb28-17"><a href="#cb28-17" tabindex="-1"></a><span class="kw">using</span> <span class="kw">namespace</span> autodiff<span class="op">;</span></span>
+<span id="cb28-18"><a href="#cb28-18" tabindex="-1"></a></span>
+<span id="cb28-19"><a href="#cb28-19" tabindex="-1"></a><span class="co">// Specialize isArithmetic for complex to make it compatible with dual</span></span>
+<span id="cb28-20"><a href="#cb28-20" tabindex="-1"></a><span class="kw">namespace</span> autodiff<span class="op">::</span>detail <span class="op">{</span></span>
+<span id="cb28-21"><a href="#cb28-21" tabindex="-1"></a></span>
+<span id="cb28-22"><a href="#cb28-22" tabindex="-1"></a><span class="kw">template</span><span class="op">&lt;</span><span class="kw">typename</span> T<span class="op">&gt;</span></span>
+<span id="cb28-23"><a href="#cb28-23" tabindex="-1"></a><span class="kw">struct</span> ArithmeticTraits<span class="op">&lt;</span>complex<span class="op">&lt;</span>T<span class="op">&gt;&gt;</span> <span class="op">:</span> ArithmeticTraits<span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">{};</span></span>
+<span id="cb28-24"><a href="#cb28-24" tabindex="-1"></a></span>
+<span id="cb28-25"><a href="#cb28-25" tabindex="-1"></a><span class="op">}</span> <span class="co">// autodiff::detail</span></span>
+<span id="cb28-26"><a href="#cb28-26" tabindex="-1"></a></span>
+<span id="cb28-27"><a href="#cb28-27" tabindex="-1"></a><span class="kw">using</span> cxdual <span class="op">=</span> Dual<span class="op">&lt;</span>complex<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;,</span> complex<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;&gt;;</span></span>
+<span id="cb28-28"><a href="#cb28-28" tabindex="-1"></a></span>
+<span id="cb28-29"><a href="#cb28-29" tabindex="-1"></a><span class="co">// The single-variable function for which derivatives are needed</span></span>
+<span id="cb28-30"><a href="#cb28-30" tabindex="-1"></a>cxdual f<span class="op">(</span>cxdual x<span class="op">)</span></span>
+<span id="cb28-31"><a href="#cb28-31" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb28-32"><a href="#cb28-32" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="op">+</span> x <span class="op">+</span> x<span class="op">*</span>x <span class="op">+</span> <span class="dv">1</span><span class="op">/</span>x <span class="op">+</span> log<span class="op">(</span>x<span class="op">);</span></span>
+<span id="cb28-33"><a href="#cb28-33" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb28-34"><a href="#cb28-34" tabindex="-1"></a></span>
+<span id="cb28-35"><a href="#cb28-35" tabindex="-1"></a><span class="co">// [[Rcpp::export]]</span></span>
+<span id="cb28-36"><a href="#cb28-36" tabindex="-1"></a><span class="dt">int</span> myfun20<span class="op">()</span></span>
+<span id="cb28-37"><a href="#cb28-37" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb28-38"><a href="#cb28-38" tabindex="-1"></a>    cxdual x <span class="op">=</span> <span class="fl">2.0</span><span class="op">;</span>   <span class="co">// the input variable x</span></span>
+<span id="cb28-39"><a href="#cb28-39" tabindex="-1"></a>    cxdual u <span class="op">=</span> f<span class="op">(</span>x<span class="op">);</span>  <span class="co">// the output variable u</span></span>
+<span id="cb28-40"><a href="#cb28-40" tabindex="-1"></a></span>
+<span id="cb28-41"><a href="#cb28-41" tabindex="-1"></a>    cxdual dudx <span class="op">=</span> derivative<span class="op">(</span>f<span class="op">,</span> wrt<span class="op">(</span>x<span class="op">),</span> at<span class="op">(</span>x<span class="op">));</span>  <span class="co">// evaluate the derivative du/dx</span></span>
+<span id="cb28-42"><a href="#cb28-42" tabindex="-1"></a></span>
+<span id="cb28-43"><a href="#cb28-43" tabindex="-1"></a>    cout <span class="op">&lt;&lt;</span> <span class="st">"u = "</span> <span class="op">&lt;&lt;</span> u <span class="op">&lt;&lt;</span> endl<span class="op">;</span>         <span class="co">// print the evaluated output u</span></span>
+<span id="cb28-44"><a href="#cb28-44" tabindex="-1"></a>    cout <span class="op">&lt;&lt;</span> <span class="st">"du/dx = "</span> <span class="op">&lt;&lt;</span> dudx <span class="op">&lt;&lt;</span> endl<span class="op">;</span>  <span class="co">// print the evaluated derivative du/dx</span></span>
+<span id="cb28-45"><a href="#cb28-45" tabindex="-1"></a></span>
+<span id="cb28-46"><a href="#cb28-46" tabindex="-1"></a>    <span class="cf">return</span><span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb28-47"><a href="#cb28-47" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb28-48"><a href="#cb28-48" tabindex="-1"></a></span>
+<span id="cb28-49"><a href="#cb28-49" tabindex="-1"></a><span class="co">/*** R</span></span>
+<span id="cb28-50"><a href="#cb28-50" tabindex="-1"></a><span class="co">myfun20()</span></span>
+<span id="cb28-51"><a href="#cb28-51" tabindex="-1"></a><span class="co">*/</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="complex-numbers">Complex Numbers<a class="anchor" aria-label="anchor" href="#complex-numbers"></a>
-</h2>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
