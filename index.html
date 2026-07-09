@@ -55,13 +55,14 @@
 <div class="section level1">
 <div class="page-header"><h1 id="rcppautodiff">Rcppautodiff<a class="anchor" aria-label="anchor" href="#rcppautodiff"></a>
 </h1></div>
-<p>An <code>R</code> interface to the <a href="https://autodiff.github.io/" class="external-link">autodiff</a> <code>C++</code> library. <a href="https://autodiff.github.io/" class="external-link">autodiff</a> is a header-only <code>C++</code> library which provides an efficient and simple interface to perform automatic differentiation. <a href="https://autodiff.github.io/" class="external-link">autodiff</a> supports both forward and reverse mode of automatic differentiation. <code>Rcppautodiff</code> brings these capabilities to <code>R</code>. For more details on the <a href="https://autodiff.github.io/" class="external-link">autodiff</a> library, please see its documentation and tutorials. A few examples usages of <code>Rcppautodiff</code> are shown below. First, installation ..</p>
+<p>An <code>R</code> interface to the <a href="https://autodiff.github.io/" class="external-link">autodiff</a> <code>C++</code> library using <code>Rcpp</code>. <a href="https://autodiff.github.io/" class="external-link">autodiff</a> is a modern, header-only <code>C++17</code> library which provides an efficient and simple interface to perform automatic differentiation in <code>C++</code>. <a href="https://autodiff.github.io/" class="external-link">autodiff</a> supports both forward and reverse mode of automatic differentiation. <code>Rcppautodiff</code> brings these capabilities to <code>R</code>. For more details on the <a href="https://autodiff.github.io/" class="external-link">autodiff</a> library, please see its documentation and tutorials.</p>
+<p>The <a href="https://sn248.github.io/Rcppautodiff/articles/Introduction-to-Rcppautodiff.html">vignette</a> of this package also reproduces a number of examples from the <code>autodiff</code> library in <code>R</code> using <code>Rcpp</code>.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p><code>Rcppautodiff</code> is not on CRAN yet. It can be installed from github using the following command in the <code>R</code> console.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">'sn248/Rcppautodiff'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">'sn248/Rcppautodiff'</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
@@ -71,7 +72,7 @@
 <div class="section level2">
 <h2 id="acknowledgement">Acknowledgement<a class="anchor" aria-label="anchor" href="#acknowledgement"></a>
 </h2>
-<p>This package would not be possible without the wonderful <code>autodiff</code>, a modern, fast and expressive C++ library for automatic differentiation (by Allan M. M. Beal), found at <a href="https://autodiff.github.io/" class="external-link uri">https://autodiff.github.io/</a></p>
+<p>This package would not exist without the wonderful <code>autodiff</code>, a modern, fast and expressive C++ library for automatic differentiation (by Allan M. M. Beal), found at <a href="https://autodiff.github.io/" class="external-link uri">https://autodiff.github.io/</a></p>
 </div>
 </div>
 
