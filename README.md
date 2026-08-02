@@ -1,4 +1,5 @@
 <!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/Rcppautodiff)](https://CRAN.R-project.org/package=Rcppautodiff)
 [![R-CMD-check](https://github.com/sn248/Rcppautodiff/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sn248/Rcppautodiff/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -8,7 +9,12 @@ An `R` interface to the [autodiff](https://autodiff.github.io/) `C++` library us
 The [vignette](https://sn248.github.io/Rcppautodiff/articles/Introduction-to-Rcppautodiff.html) of this package also reproduces a number of examples from the `autodiff` library in `R` using `Rcpp`.
 
 ## Installation
-`Rcppautodiff` is not on CRAN yet. It can be installed from github using the following command in the `R` console.
+`Rcppautodiff` can be installed from CRAN using the following command in the `R` console.
+```R
+install.packages("Rcppautodiff")
+```
+
+The development version can be installed from github.
 ```R
 pak::pkg_install('sn248/Rcppautodiff')
 ```
