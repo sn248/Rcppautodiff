@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/sn248/Rcppautodiff/blob/master/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/sn248/Rcppautodiff/blob/v0.1.0/DESCRIPTION)
 
 Nayak S (2026). *Rcppautodiff: An Interface to the C++ Automatic
 Differentiation Library 'autodiff'*. R package version 0.1.0,
