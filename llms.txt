@@ -17,8 +17,15 @@ library in `R` using `Rcpp`.
 
 ## Installation
 
-`Rcppautodiff` is not on CRAN yet. It can be installed from github using
-the following command in the `R` console.
+`Rcppautodiff` can be installed from CRAN using the following command in
+the `R` console.
+
+``` r
+
+install.packages("Rcppautodiff")
+```
+
+The development version can be installed from github.
 
 ``` r
 
