@@ -1,18 +1,13 @@
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
+0 errors | 0 warnings | 2 notes
 
-This is a new release.
+Both notes are specific to the local check machine: a non-portable compilation flag from the system R configuration, and HTML validation skipped because 'tidy' is not installed.
 
-### Resolved the initial CRAN comments
+## Update
 
--  More details about the package functionality and implemented methods are added to the Description field of DESCRIPTION.
+This is a maintenance release requested by the 'RcppEigen' maintainers. It updates the bundled 'autodiff' header `autodiff/common/eigen.hpp` so that the package compiles with the upcoming 'RcppEigen' based on Eigen 5, and it continues to compile with the current 'RcppEigen'. See https://github.com/RcppCore/RcppEigen/issues/151.
 
-- Package names, software names and API (application programming interface) names are in single quotes in title and description fields of DESCRIPTION.
+## Reverse dependencies
 
-- Added \\value to .Rd files regarding exported methods and explained the function results in the documentation. 
-
-- Regarding 'uexpected symbol: dual x', this is coming from the data type defined by the 'autodiff' library and is NOT an error.
-
-- Small executable examples in Rd-files to illustrate the use of the exported functions and tests are added.
-
+There are no reverse dependencies on CRAN.
