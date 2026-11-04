@@ -11,13 +11,13 @@ Source:
 [`DESCRIPTION`](https://github.com/sn248/Rcppautodiff/blob/master/DESCRIPTION)
 
 Nayak S (2026). *Rcppautodiff: An Interface to the C++ Automatic
-Differentiation Library 'autodiff'*. R package version 0.1.0,
+Differentiation Library 'autodiff'*. R package version 0.1.1,
 <https://github.com/sn248/Rcppautodiff>.
 
     @Manual{,
       title = {Rcppautodiff: An Interface to the C++ Automatic Differentiation Library 'autodiff'},
       author = {Satyaprakash Nayak},
       year = {2026},
-      note = {R package version 0.1.0},
+      note = {R package version 0.1.1},
       url = {https://github.com/sn248/Rcppautodiff},
     }
